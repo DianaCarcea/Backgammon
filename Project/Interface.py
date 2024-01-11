@@ -1,130 +1,60 @@
 import os
 import tkinter as tk
-from tkinter import PhotoImage
 from PIL import Image, ImageTk
-
-from TableUI import TableUI
+from board_interface import TableUi
 
 
 class Interface:
-    def __init__(self, master):
-        self.master = master
-        self.table_ui = None
-        self.image_original_page1 = None
-        self.image_ratio_page1 = None
+    def __init__(self, window):
+        self.window = window
+        self.table_ui = TableUi(self)
 
-        #  First page
-        self.canvas_page1 = tk.Canvas(master, bd=0, highlightthickness=0, relief='ridge')
-        self.canvas_page1.grid(column=0, columnspan=3, row=0, sticky='nsew')
-        self.canvas_page1.bind('<Configure>', self.responsive_page)
+        self.title_screen_canvas = None
 
-        self.title_text_id = None
-        self.select_text_id = None
-        self.button1 = None
-        self.button2 = None
-        self.image_button1 = None
-        self.image_button2 = None
-        self.photo_button1 = None
-        self.photo_button2 = None
-        self.button1_window = None
-        self.button2_window = None
+        self.image_button_human = None
+        self.image_button_ai = None
 
-        self.play_ai = False
-        self.init_page_content()
+        self.init_title_screen_frame()
 
-    def init_page_content(self):
+    def init_title_screen_frame(self):
+        self.title_screen_canvas = tk.Canvas(self.window, bd=0, highlightthickness=0, relief='ridge')
+        self.title_screen_canvas.pack(fill=tk.BOTH, expand=True)
 
-        self.image_original_page1 = Image.open(os.path.join("images", "fundal.png"))
-        self.image_ratio_page1 = self.image_original_page1.size[0] / self.image_original_page1.size[1]
+        image = Image.open(os.path.join("images", "fundal.png"))
+        photo = ImageTk.PhotoImage(image)
 
-        self.title_text_id = self.canvas_page1.create_text(self.canvas_page1.winfo_reqwidth() // 2, 120,
-                                                           text="Jocul de table", fill="#cbc9c7",
-                                                           font=("Comic Sans MS", 30, "bold"), anchor='center')
+        self.title_screen_canvas.create_image(0, 0, anchor=tk.NW, image=photo)
+        self.title_screen_canvas.image = photo
+
+        self.title_screen_canvas.create_text(550, 120,
+                                             text="Jocul de table", fill="#cbc9c7",
+                                             font=("Comic Sans MS", 30, "bold"), anchor='center')
+
         self.init_buttons()
 
     def init_buttons(self):
-        self.image_button1 = Image.open(os.path.join("images", "HH.png"))
-        self.image_button2 = Image.open(os.path.join("images", "HA.png"))
+        self.title_screen_canvas.create_text(130, 180,
+                                             text="Selectare mod:", fill="#cbc9c7",
+                                             font=("Comic Sans MS", 20, "bold"), anchor='nw')
 
-        self.photo_button1 = ImageTk.PhotoImage(self.image_button1)
-        self.photo_button2 = ImageTk.PhotoImage(self.image_button2)
+        image_button_human = Image.open(os.path.join("images", "HH.png"))
+        image_button_ai = Image.open(os.path.join("images", "HA.png"))
 
-        self.button1 = tk.Button(self.canvas_page1, image=self.photo_button1, command=self.on_button1_click, bd=1)
-        self.button1_window = self.canvas_page1.create_window(120, 250, window=self.button1, anchor='nw')
+        self.image_button_human = ImageTk.PhotoImage(image_button_human)
+        self.image_button_ai = ImageTk.PhotoImage(image_button_ai)
 
-        self.button2 = tk.Button(self.canvas_page1, image=self.photo_button2, command=self.on_button2_click, bd=1)
-        self.button2_window = self.canvas_page1.create_window(120, 450, window=self.button2, anchor='nw')
+        button1 = tk.Button(self.title_screen_canvas, image=self.image_button_human, command=self.on_button_human_click,
+                            bd=1)
+        self.title_screen_canvas.create_window(120, 250, window=button1, anchor='nw')
 
-        button_x = int(self.canvas_page1.winfo_reqwidth() / 6)
-        button_y1 = 250
-        button_width = int(self.canvas_page1.winfo_reqwidth() / 6)
-        button_height = int(button_width * (self.image_button1.size[1] / self.image_button1.size[0]))
-        text_font_size = int(20 * (button_width / self.image_button1.size[0]))
-        dist_text = int(0.15 * button_height)
-        dist_text_and_button = int(0.4 * button_height)
+        button2 = tk.Button(self.title_screen_canvas, image=self.image_button_ai, command=self.on_button_ai_click, bd=1)
+        self.title_screen_canvas.create_window(120, 450, window=button2, anchor='nw')
 
-        self.select_text_id = self.canvas_page1.create_text(button_x + dist_text, button_y1 - dist_text_and_button,
-                                                            text="Selectare mod:", fill="#cbc9c7",
-                                                            font=("Comic Sans MS", text_font_size, "bold"), anchor='nw')
+    def on_button_human_click(self):
+        self.title_screen_canvas.destroy()
+        self.table_ui.init_board_ui()
 
-        button_y2 = button_y1 + button_height + 50
-
-        self.canvas_page1.coords(self.button1_window, button_x, button_y1)
-        self.canvas_page1.coords(self.button2_window, button_x, button_y2)
-
-    def responsive_page(self, event):
-        global resized_tk
-        canvas_ratio = event.width / event.height
-
-        if canvas_ratio > self.image_ratio_page1:
-            width = int(event.width)
-            height = int(event.width / self.image_ratio_page1)
-        else:
-            height = int(event.height)
-            width = int(height * self.image_ratio_page1)
-
-        resized_image = self.image_original_page1.resize((width, height))
-        resized_tk = ImageTk.PhotoImage(resized_image)
-        self.canvas_page1.create_image(int(event.width / 2), int(event.height / 2), image=resized_tk, anchor='center')
-
-        self.title_text_id = self.canvas_page1.create_text(event.width // 2, 120, text="Jocul de table", fill="#cbc9c7",
-                                                           font=("Comic Sans MS", 30, "bold"), anchor='center')
-
-        button_x = int(event.width / 6)
-        button_y1 = 250
-
-        button_width = int(event.width / 6)
-        button_height = int(button_width * (self.image_button1.size[1] / self.image_button1.size[0]))
-
-        text_font_size = int(20 * (button_width / self.image_button1.size[0]))
-        dist_text = int(0.15 * button_height)
-        dist_text_and_button = int(0.4 * button_height)
-
-        self.select_text_id = self.canvas_page1.create_text(button_x + dist_text, button_y1 - dist_text_and_button,
-                                                            text="Selectare mod:", fill="#cbc9c7",
-                                                            font=("Comic Sans MS", text_font_size, "bold"), anchor='nw')
-
-        self.photo_button1 = ImageTk.PhotoImage(self.image_button1.resize((button_width, button_height)))
-        self.photo_button2 = ImageTk.PhotoImage(self.image_button2.resize((button_width, button_height)))
-
-        self.button1.config(image=self.photo_button1)
-        self.button2.config(image=self.photo_button2)
-
-        button_y2 = button_y1 + button_height + 50
-
-        self.canvas_page1.coords(self.button1_window, button_x, button_y1)
-        self.canvas_page1.coords(self.button2_window, button_x, button_y2)
-
-    def on_button1_click(self):
-        self.play_ai = False
-        self.table_ui = TableUI(self.master, back_callback=self.show_first_page, play_ai=self.play_ai)
-        self.table_ui.place(relx=0, rely=0, relwidth=1, relheight=1)
-
-    def show_first_page(self):
-        self.canvas_page1.place(relx=0, rely=0, relwidth=1, relheight=1)
-
-    def on_button2_click(self):
-        self.play_ai = True
-        self.table_ui = TableUI(self.master, back_callback=self.show_first_page, play_ai=self.play_ai)
-        self.table_ui.place(relx=0, rely=0, relwidth=1, relheight=1)
+    def on_button_ai_click(self):
+        self.title_screen_canvas.destroy()
+        self.table_ui.init_board_ui()
 
