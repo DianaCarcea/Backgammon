@@ -43,18 +43,15 @@ class Interface:
         self.image_button_human = ImageTk.PhotoImage(image_button_human)
         self.image_button_ai = ImageTk.PhotoImage(image_button_ai)
 
-        button1 = tk.Button(self.title_screen_canvas, image=self.image_button_human, command=self.on_button_human_click,
-                            bd=1)
+        button1 = tk.Button(self.title_screen_canvas, image=self.image_button_human,
+                            command=lambda: self.on_button_click("human"), bd=1)
         self.title_screen_canvas.create_window(120, 250, window=button1, anchor='nw')
 
-        button2 = tk.Button(self.title_screen_canvas, image=self.image_button_ai, command=self.on_button_ai_click, bd=1)
+        button2 = tk.Button(self.title_screen_canvas, image=self.image_button_ai,
+                            command=lambda: self.on_button_click("AI"), bd=1)
         self.title_screen_canvas.create_window(120, 450, window=button2, anchor='nw')
 
-    def on_button_human_click(self):
+    def on_button_click(self, mode):
         self.title_screen_canvas.destroy()
-        self.table_ui.init_board_ui()
-
-    def on_button_ai_click(self):
-        self.title_screen_canvas.destroy()
-        self.table_ui.init_board_ui()
-
+        self.table_ui = TableUi(self)
+        self.table_ui.init_board_ui(mode)
