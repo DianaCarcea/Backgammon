@@ -1,14 +1,54 @@
+"""
+The file game_actions.py contains the class GameActions, which is used to handle the game logic.
+"""
 import time
 import random
 import tkinter as tk
 
 
 class GameActions:
+    """
+    This class manages game actions and logic.
+
+    Attributes:
+    - table_ui (TableUi): The instance of the TableUi class.
+
+    Methods:
+    - roll_dice(): Simulate rolling the dice.
+    - have_moves(player_color): Check if the player has possible moves.
+    - move_piece(player_color, x, y): Move a piece on the board.
+    - get_possible_pos(player_color, x, y): Get possible positions for a piece.
+    - show_options(player_color, x, y): Show options for moving a piece.
+    - moves_for_piece_home(player_color, x, y): Get possible moves for a piece inside the home.
+    - show_options_removed_piece(player_color): Show options for removed pieces.
+    - placing_piece(player_color, col, occupied_col): Place a piece on the board.
+    - all_pieces_in_home(player_color): Check if all pieces are in the home.
+    - take_out_piece(player_color, column): Take out a piece from the board.
+    """
 
     def __init__(self, TableUi):
+        """
+        Initialize GameActions with the given TableUi instance.
+
+        Parameters:
+        - TableUi (object): An instance of the TableUi class.
+        """
         self.table_ui = TableUi
 
     def roll_dice(self):
+        """
+        Simulate rolling the dice and handle the game state accordingly.
+
+        This method simulates rolling two dice, updates the dice values, and manages the game state based on the outcomes.
+        If the two dice show the same value, the player gets additional moves. The method updates the game log label and
+        disables the roll dice button appropriately.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
         time.sleep(0.7)
 
         dice1 = random.randint(1, 6)
@@ -63,6 +103,15 @@ class GameActions:
             self.table_ui.game_log_label.config(text="P2 alege o mutare!")
 
     def have_moves(self, player_color):
+        """
+        Check if the given player has available moves based on the current dice values and game state.
+
+        Parameters:
+        - player_color (str): The color of the player ("white" or "black").
+
+        Returns:
+        - bool: True if the player has available moves, False otherwise.
+        """
 
         if player_color == "black":
             other_color = "white"
@@ -107,6 +156,17 @@ class GameActions:
             return True
 
     def move_piece(self, player_color, x, y):
+        """
+        Process the player's move based on the current game state.
+
+        Parameters:
+        - player_color (str): The color of the player ("white" or "black").
+        - x (int): X-coordinate of the selected piece.
+        - y (int): Y-coordinate of the selected piece.
+
+        Returns:
+        None
+        """
         if self.table_ui.current_turn == "white" and len(self.table_ui.dices) > 0:
             if player_color == "black":
                 self.table_ui.game_log_label.config(text="P2 nu este randul tau!")
@@ -134,6 +194,18 @@ class GameActions:
                 self.table_ui.game_log_label.config(text="P2 trebuie sa dai cu zarul!")
 
     def get_possible_pos(self, player_color, x, y):
+        """
+        Get the possible positions for a player's piece based on the current game state.
+
+        Parameters:
+        - player_color (str): The color of the player ("white" or "black").
+        - x (int): X-coordinate of the selected piece.
+        - y (int): Y-coordinate of the selected piece.
+
+        Returns:
+        - list: A list of possible positions where the piece can move.
+        """
+
         possible_pos = []
         if player_color == "white":
             if len(self.table_ui.dices) == 2:
@@ -198,7 +270,19 @@ class GameActions:
         return possible_pos
 
     def show_options(self, player_color, x, y):
+        """
+        The method first clears any existing buttons, checks if the player has valid moves, and
+        then displays directional buttons or take-out buttons based on the game state. The displayed
+        buttons are associated with specific commands for placing or taking out pieces.
 
+        Parameters:
+        - player_color (str): The color of the player ("white" or "black").
+        - x (int): X-coordinate of the selected piece on the board.
+        - y (int): Y-coordinate of the selected piece on the board.
+
+        Returns:
+        None
+        """
         if len(self.table_ui.all_buttons_pos) > 0:
             for button in self.table_ui.all_buttons_pos:
                 button.destroy()
@@ -315,6 +399,21 @@ class GameActions:
                 self.table_ui.game_log_label.config(text="P2 trebuie sa dai cu zarul!")
 
     def moves_for_piece_home(self, player_color, x, y):
+        """
+        Get possible move options for a player's piece that is currently in the home area.
+        The method calculates potential move positions based on the player's dice rolls and
+        the current state of the board. If the piece can be moved onto the board, the valid
+        position is appended to the `possible_pos` list. If the piece can be taken out (borne off),
+        a special code of [-100, 0] is appended to indicate that it can be removed from the home area.
+
+        Parameters:
+        - player_color (str): The color of the player ("white" or "black").
+        - x (int): X-coordinate of the selected piece on the board.
+        - y (int): Y-coordinate of the selected piece on the board.
+
+        Returns:
+        - list: A list of potential move positions. Each position is represented as [new_x_col, new_y].
+        """
         possible_pos = []
         if player_color == "white":
             if len(self.table_ui.dices) == 2:
@@ -447,6 +546,19 @@ class GameActions:
         return possible_pos
 
     def show_options_removed_piece(self, player_color):
+        """
+        Display possible move options for a player's piece that has been removed due to the opponent.
+        The method checks the available dice rolls and the opponent's board to find potential positions
+        where the removed piece can be placed back onto the board. It then displays arrow buttons indicating
+        the possible move directions.
+        If the player is controlled by the AI, it randomly selects one of the available move options.
+
+        Parameters:
+        - player_color (str): The color of the player ("white" or "black").
+
+        Returns:
+        None
+        """
         if player_color == "black":
             other_player = "white"
             new_y = 5
@@ -502,6 +614,23 @@ class GameActions:
                 self.table_ui.all_buttons_pos[ai_move].invoke()
 
     def placing_piece(self, player_color, col, occupied_col):
+        """
+        Handle the placement of a player's piece on the game board.
+        The method updates the game board to reflect the placement of the player's piece. If the piece is moved from a valid
+        position (not borne off), it adjusts the dice values and the player's piece count. If there are remaining dice and
+        pieces, it displays options for placing removed pieces.
+
+        If all dice have been used, it updates the turn, enables the roll dice button, and updates the game log label.
+
+        Parameters:
+        - player_color (str): The color of the player ("white" or "black").
+        - col (int): The column on the board where the piece will be placed.
+        - occupied_col (int): The column where the piece is currently located or a special code (-100) if it's off the board.
+
+        Returns:
+        None
+        """
+
         for button in self.table_ui.all_buttons_pos:
             button.destroy()
         self.table_ui.all_buttons_pos = []
@@ -534,6 +663,19 @@ class GameActions:
                 self.table_ui.game_log_label.config(text="P2 trebuie sa dai cu zarul!")
 
     def all_pieces_in_home(self, player_color):
+        """
+        Check if all pieces of a player are in their home board.
+        The method counts the number of pieces of the player outside their home board.
+        If the player has no pieces outside, it returns True, indicating that all pieces are in the home board.
+        Otherwise, it returns False.
+
+        Parameters:
+        - player_color (str): The color of the player ("white" or "black").
+
+        Returns:
+        bool: True if all pieces are in the home board, False otherwise.
+        """
+
         nr_piece_outside = 0
 
         if self.table_ui.info_pieces[player_color][0] == 0:
@@ -546,6 +688,20 @@ class GameActions:
             return False
 
     def take_out_piece(self, player_color, column):
+        """
+        Remove a piece from the specified column of the player's board.
+        This method removes the top piece from the specified column of the player's board,
+        increments the count of removed pieces, and updates the dice values if a matching dice value is found.
+        It also clears any displayed buttons, updates the game label, and checks for a winner.
+        If the game is ongoing, it enables the roll dice button for the next turn.
+
+        Parameters:
+        - player_color (str): The color of the player ("white" or "black").
+        - column (int): The column from which to remove a piece.
+
+        Returns:
+        None
+        """
         self.table_ui.board[player_color][column][2][-1].destroy()
         self.table_ui.board[player_color][column][2].pop()
         self.table_ui.info_pieces[player_color][1] += 1

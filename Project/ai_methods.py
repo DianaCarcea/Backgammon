@@ -1,3 +1,7 @@
+"""
+This file contains the AI class which is used to make the moves for the AI player.
+"""
+
 import random
 import tkinter as tk
 import sys
@@ -9,12 +13,39 @@ class NoWarnings:
 
 
 class AI:
+    """
+    This class is used to make the moves for the AI player.
+
+    Attributes:
+    - table_ui (TableUi): The instance of the TableUi class.
+
+     Methods:
+    - turn_ai(): Initiates the AI player's turn, including dice rolling, move execution, and UI updates.
+    - move_ai(): Implements the logic for AI moves based on the current game state.
+    """
 
     def __init__(self, TableUi):
+        """
+        Initialize the AI with the given TableUi instance.
+
+        Parameters:
+        - TableUi (object): An instance of the TableUi class.
+        """
+
         sys.stderr = NoWarnings()
         self.table_ui = TableUi
 
     def turn_ai(self):
+        """
+        Perform the AI's turn, including rolling dice, making moves, and updating the UI.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
+
         self.table_ui.dices = []
         self.table_ui.game_actions.roll_dice()
         self.move_ai()
@@ -23,6 +54,16 @@ class AI:
         self.table_ui.current_turn = "white"
 
     def move_ai(self):
+        """
+        Implement the logic for AI moves based on the current game state.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
+
         if self.table_ui.current_turn == "black" and self.table_ui.names[self.table_ui.current_turn] == 'AI' and len(
                 self.table_ui.dices) > 0:
             if self.table_ui.info_pieces["black"][0] == 0:

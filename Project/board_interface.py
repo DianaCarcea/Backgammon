@@ -1,3 +1,10 @@
+"""
+This file contains the class that creates the board interface.
+
+The board interface is the main interface of the game. It contains the board, the pieces, the dices and the buttons.
+The board interface is created after the title screen interface.
+"""
+
 import tkinter as tk
 import os
 from PIL import Image, ImageTk
@@ -8,6 +15,16 @@ from game_actions import GameActions
 
 
 def load_dice_images():
+    """
+    This function loads the dice images from the folder "zaruri" and returns them.
+
+    Parameters:
+    None
+
+    Returns:
+    list: List of ImageTk.PhotoImage objects for each dice face.
+    """
+
     original_images = [Image.open(os.path.join("zaruri", f"{i}.png")) for i in range(1, 7)]
     dice_images = [ImageTk.PhotoImage(image=image.resize((50, 50))) for image in original_images]
 
@@ -15,7 +32,66 @@ def load_dice_images():
 
 
 class TableUi:
+    """
+    Class representing the user interface for the backgammon game board.
+
+    Attributes:
+    - ai (AI): Instance of the AI class for managing AI actions.
+    - game_actions (GameActions): Instance of the GameActions class for managing game actions.
+    - window (tk.Tk): The main window of the application.
+    - board_frame (tk.Frame): Frame for containing the backgammon board UI.
+    - canvas (tk.Canvas): Canvas for drawing the backgammon board.
+    - interface_title_screen (Interface): Instance of the Interface class for managing the title screen.
+    - mode (str): Game mode ("human" or "AI").
+    - names (dict): Dictionary containing player names for "white" and "black".
+    - info_pieces (dict): Dictionary containing the count of eliminated and free pieces for "black" and "white".
+    - button_dice_on (bool): Flag indicating whether the roll dice button is active.
+    - background_image (tk.PhotoImage): Image for the background of the winner frame.
+    - label_free_p1 (tk.Label): Label displaying the count of free pieces for player 1.
+    - label_eliminate_p1 (tk.Label): Label displaying the count of eliminated pieces for player 1.
+    - label_free_p2 (tk.Label): Label displaying the count of free pieces for player 2.
+    - label_eliminate_p2 (tk.Label): Label displaying the count of eliminated pieces for player 2.
+    - game_log_label (tk.Label): Label for displaying game log messages.
+    - dice_images (list): List of ImageTk.PhotoImage objects for dice faces.
+    - roll_dice_button (tk.Button): Button for rolling the dice.
+    - image_piece_black (ImageTk.PhotoImage): Image for the black game piece.
+    - image_piece_white (ImageTk.PhotoImage): Image for the white game piece.
+    - image_up_arrow (ImageTk.PhotoImage): Image for the up arrow.
+    - image_down_arrow (ImageTk.PhotoImage): Image for the down arrow.
+    - dice_labels (list): List of labels for displaying dice images.
+    - all_buttons_pos (list): List to store positions of all buttons.
+    - board (dict): Dictionary representing the backgammon board layout.
+    - board_columns_black (list): List of columns representing the black player's side of the board.
+    - board_columns_white (list): List of columns representing the white player's side of the board.
+    - dices (list): List to store the dice values.
+    - current_turn (str): Current player's turn ("white" or "black").
+
+    Methods:
+    - __init__(self, interface_title_screen): Initializes the TableUi object.
+    - init_board_ui(self, mode): Initializes the board UI based on the selected game mode.
+    - create_back_button(self): Creates a button for returning to the title screen.
+    - create_status_players(self): Creates player status displays.
+    - create_table(self): Creates the visual representation of the backgammon board.
+    - create_pieces_buttons(self, player_color): Creates the buttons for player pieces on the board.
+    - create_button_roll_dice(self): Creates the button for rolling the dice.
+    - display_dices(self): Displays the current dice values.
+    - on_back_button_click(self): Handles the back button click event.
+    - config_pieces_on_board(self, column_piece, column_from, overlap): Configures the position of pieces on the board.
+    - update_board_game(self, player_color, column_from, column_to): Updates the board based on player moves.
+    - update_label(self, player_color): Updates the player status labels.
+    - who_won(self): Checks if a player has won the game.
+    - init_frame_winner(self, winner): Initializes the winner frame.
+    - set_background_image(self, winner): Sets the background image based on the winner.
+    """
+
     def __init__(self, interface_title_screen):
+        """
+        Initializes the TableUi object.
+
+        Parameters:
+        - interface_title_screen (Interface): Instance of the Interface class for managing the title screen.
+        """
+
         self.ai = AI(self)
         self.game_actions = GameActions(self)
 
@@ -61,6 +137,16 @@ class TableUi:
         self.current_turn = "white"
 
     def init_board_ui(self, mode):
+        """
+        Initializes the board UI based on the selected game mode.
+
+        Parameters:
+        - mode (str): Game mode ("human" or "AI").
+
+        Returns:
+        None
+        """
+
         self.mode = mode
         if self.mode == 'human':
             self.names = {"white": "white", "black": "black"}
@@ -84,6 +170,16 @@ class TableUi:
         self.board = {"white": board_columns_white, "black": board_columns_black}
 
     def create_back_button(self):
+        """
+        Creates a button for returning to the title screen.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
+
         button_back = tk.Button(self.board_frame, text="Înapoi la pagina principală",
                                 command=self.on_back_button_click, bg="white",
                                 fg="black",
@@ -93,6 +189,16 @@ class TableUi:
         button_back.pack(side=tk.TOP, anchor=tk.NW, padx=20, pady=20)
 
     def create_status_players(self):
+        """
+        Creates player status displays.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
+
         canvas_p1 = tk.Canvas(self.board_frame, width=80, height=450, bg="#995536")
         canvas_p1.place(x=240, y=140)
 
@@ -124,6 +230,15 @@ class TableUi:
         self.label_eliminate_p2.place(x=35, y=370)
 
     def create_table(self):
+        """
+        Creates the visual representation of the backgammon board.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
 
         self.canvas = tk.Canvas(self.board_frame, bd=5, highlightthickness=1, relief='ridge', bg="#995536",
                                 highlightbackground="#482618")
@@ -168,6 +283,16 @@ class TableUi:
                 draw_triangle(self.canvas, x, 250, 40, 5, "#532a1a", direction="up")
 
     def create_pieces_buttons(self, player_color):
+        """
+        Creates the buttons for player pieces on the board.
+
+        Parameters:
+        - player_color (str): Color of the player ("black" or "white").
+
+        Returns:
+        - list: List of columns representing the player's side of the board.
+        """
+
         if player_color == "black":
             image_piece = Image.open(os.path.join("images", "black_circle.png"))
             self.image_piece_black = ImageTk.PhotoImage(image_piece)
@@ -280,6 +405,16 @@ class TableUi:
         return board_columns
 
     def create_button_roll_dice(self):
+        """
+        Creates the "Arunca zaruri" button.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
+
         self.roll_dice_button = tk.Button(self.board_frame, text="Arunca zaruri",
                                           command=lambda: self.game_actions.roll_dice(), bg="#482618", fg="white",
                                           font=("Arial", 12), padx=10, pady=5, relief=tk.FLAT, borderwidth=0,
@@ -287,6 +422,16 @@ class TableUi:
         self.roll_dice_button.pack(side=tk.TOP, anchor=tk.NW, padx=(80, 0), pady=(200, 0))
 
     def display_dices(self):
+        """
+        Displays the rolled dice images on the board.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
+
         for i, dice in enumerate(self.dices[:2]):
             label = tk.Label(self.board_frame, image=self.dice_images[dice - 1])
             self.dice_labels.append(label)
@@ -299,10 +444,33 @@ class TableUi:
                 label.place(x=80 + i * 60, y=410)
 
     def on_back_button_click(self):
+        """
+        Handles the "Back" button click event.
+        Destroys the current board frame and initializes the title screen frame.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
+
         self.board_frame.destroy()
         self.interface_title_screen.init_title_screen_frame()
 
     def config_pieces_on_board(self, column_piece, column_from, overlap):
+        """
+        Configures the position of pieces on the board after a move.
+
+        Parameters:
+        - column_piece (list): Information about the column to configure.
+        - column_from (int): Index of the column from which the piece is moved.
+        - overlap (int): Flag indicating whether pieces overlap.
+
+        Returns:
+        None
+        """
+
         if overlap == 0:
             if self.current_turn == "black":
                 adjust_poz = [-1, 1]
@@ -333,6 +501,19 @@ class TableUi:
                     column_piece[2][col_x].place(x=column_piece[0], y=(column_piece[1] + adjust_poz[1] * col_x))
 
     def update_board_game(self, player_color, column_from, column_to):
+        """
+        Update the game board based on the move made by the player.
+
+        Parameters:
+        - player_color (str): The color of the player making the move.
+        - column_from (int): The column index from which the piece is moved.
+                          Set to -100 if the move is a piece entering from the bar.
+        - column_to (int): The column index to which the piece is moved.
+
+        Returns:
+        None
+        """
+
         if player_color == "black":
             other_color = "white"
             adjust_poz = [-35, 35]
@@ -419,6 +600,16 @@ class TableUi:
             self.update_label(other_color)
 
     def update_label(self, player_color):
+        """
+        Update the labels displaying the number of eliminated and free pieces for a player.
+
+        Parameters:
+        - player_color (str): The color of the player whose labels need to be updated.
+
+        Returns:
+        None
+        """
+
         if player_color == "white":
             self.label_eliminate_p1.config(text=f"{self.info_pieces[player_color][0]}")
             self.label_free_p1.config(text=f"{self.info_pieces[player_color][1]}")
@@ -427,6 +618,16 @@ class TableUi:
             self.label_free_p2.config(text=f"{self.info_pieces[player_color][1]}")
 
     def who_won(self):
+        """
+        Check if a player has won the game. If yes, initialize the winner frame.
+
+        Parameters:
+        None
+
+        Returns:
+        int: 100 if no winner yet, else None
+        """
+
         if self.info_pieces["white"][1] == 15:
             print("A castigat P1")
             self.init_frame_winner("white")
@@ -442,6 +643,16 @@ class TableUi:
         return 100
 
     def init_frame_winner(self, winner):
+        """
+        Initialize the frame that displays the winner of the game.
+
+        Parameters:
+        - winner (str): The color or player that won the game.
+
+        Returns:
+        None
+        """
+
         self.board_frame.destroy()
         self.board_frame = tk.Frame(self.window, bd=0, highlightthickness=0, bg="brown", relief='ridge')
         self.board_frame.pack(fill=tk.BOTH, expand=True)
@@ -449,6 +660,16 @@ class TableUi:
         self.create_back_button()
 
     def set_background_image(self, winner):
+        """
+        Set the background image for the winner frame based on the winner.
+
+        Parameters:
+        - winner (str): The color or entity that won the game.
+
+        Returns:
+        None
+        """
+
         if winner == "white":
             self.background_image = tk.PhotoImage(file="images/fundal_alb_win.png")
         elif winner == "black":
