@@ -217,7 +217,10 @@ class TableUi:
         canvas_p2 = tk.Canvas(self.board_frame, width=80, height=450, bg="#995536")
         canvas_p2.place(x=865, y=140)
 
-        canvas_p2.create_text(45, 40, text="P2", font=("Arial", 20), fill="black")
+        if self.names["black"] == "AI":
+            canvas_p2.create_text(45, 40, text="AI", font=("Arial", 20), fill="black")
+        else:
+            canvas_p2.create_text(45, 40, text="P2", font=("Arial", 20), fill="black")
         canvas_p2.create_oval(18, 70, 68, 120, fill="black", outline="white")
 
         canvas_p2.create_text(45, 200, text="Piese\nscoase:", font=("Arial", 12), fill="black")
@@ -629,15 +632,12 @@ class TableUi:
         """
 
         if self.info_pieces["white"][1] == 15:
-            print("A castigat P1")
             self.init_frame_winner("white")
             return
         if self.names["black"] == "AI" and self.info_pieces["black"][1] == 15:
-            print("A castigat AI")
             self.init_frame_winner("ai")
             return
         if self.names["black"] == "black" and self.info_pieces["black"][1] == 15:
-            print("A castigat P2")
             self.init_frame_winner("black")
             return
         return 100

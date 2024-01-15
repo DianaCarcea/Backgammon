@@ -78,7 +78,6 @@ class GameActions:
                 if self.table_ui.current_turn == "white":
                     self.table_ui.current_turn = "black"
                     if self.table_ui.current_turn == "black" and self.table_ui.names["black"] == "AI":
-                        print(f"nu a putut face zarurile:{self.table_ui.dices}")
                         self.table_ui.ai.turn_ai()
                 else:
                     self.table_ui.current_turn = "white"
@@ -294,7 +293,6 @@ class GameActions:
                 if not self.all_pieces_in_home(player_color):
 
                     possible_pos = self.get_possible_pos(player_color, x, y)
-                    print(possible_pos)
 
                     for i in range(0, len(possible_pos)):
                         if possible_pos[i][1] == 5:
