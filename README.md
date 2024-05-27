@@ -12,7 +12,7 @@ This project is developed as part of the Python laboratory sessions at our unive
 2. Ensure you have Python 3.x installed on your machine.
 3. Run the game using the following command:
    ```bash
-   python backgammon.py
+   python main.py
 
 ## Demo Gameplay: 
 https://github.com/DianaCarcea/Backgammon/assets/100145387/a951085c-5dc7-45ba-9ff5-1d4b6cc0871d
